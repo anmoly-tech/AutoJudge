@@ -37,18 +37,30 @@ The dataset is pre-labeled and provided for the project.
 
 ### TF-IDF Features
 Textual data is converted into numerical features using TF-IDF
-(Term Frequency–Inverse Document Frequency). The vectorizer is limited to the
-top 5000 features and English stop words are removed.
+(Term Frequency–Inverse Document Frequency). This representation captures
+the importance of words relative to the entire dataset. The vectorizer
+is limited to the top 5000 features, and English stop words are removed
+to reduce noise.
 
 ### Engineered Features
-In addition to TF-IDF, domain-specific features are added to better capture
-problem complexity:
-- Text length
-- Mathematical symbol count and density
-- Algorithm keyword frequency (graph, dp, tree, etc.)
-- Algorithm hint count
-- Constraint count and maximum constraint value
-- Constraint-related word frequency
+In addition to TF-IDF, several domain-specific features are engineered
+to better capture the structural and algorithmic complexity of
+programming problems:
+
+- **Text length:** Longer problem descriptions often indicate higher complexity.
+- **Mathematical symbol density:** Measures the proportion of mathematical symbols
+  in the text, indicating mathematically intensive problems.
+- **Algorithm keyword frequency:** Counts occurrences of algorithm-related terms
+  such as graph, dp, tree, bfs, and dfs.
+- **Constraint count:** Counts the number of large numerical constraints
+  mentioned in the problem statement.
+- **Maximum constraint value:** Captures the largest numerical bound specified,
+  indicating required algorithmic efficiency.
+- **Constraint-related word frequency:** Counts occurrences of words such as
+  constraint, bound, and limit.
+- **Sample input-output length:** Measures the size of sample inputs and outputs,
+  reflecting problem complexity.
+
 
 ---
 
