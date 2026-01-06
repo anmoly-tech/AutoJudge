@@ -1,96 +1,86 @@
 # AutoJudge: Predicting Programming Problem Difficulty
 
-## Overview
-AutoJudge is a machine learning system that automatically predicts the
-difficulty of programming problems using **only textual information**.
-The system performs:
+## Project Overview
+AutoJudge is a machine learning project that predicts the difficulty of
+programming problems using only their textual descriptions. The system performs
+two tasks:
+- Classification of problems into Easy, Medium, or Hard
+- Regression to predict a numerical difficulty score
 
-- **Classification** → Easy / Medium / Hard  
-- **Regression** → Numerical difficulty score  
-
-This project removes the need for manual difficulty labeling and demonstrates
-how natural language processing and feature engineering can be applied to
-competitive programming problems.
+The goal of this project is to automate difficulty estimation, which is usually
+done manually on competitive programming platforms.
 
 ---
 
 ## Dataset
-Each problem in the dataset contains:
+The dataset contains approximately 4100 programming problems. Each problem
+includes the following fields:
+- Title
+- Problem description
+- Input description
+- Output description
+- Difficulty class (Easy / Medium / Hard)
+- Numerical difficulty score
 
-- `title`
-- `description`
-- `input_description`
-- `output_description`
-- `problem_class` (Easy / Medium / Hard)
-- `problem_score` (numeric difficulty score)
-
-Total problems: **~4100**
-
-The dataset is provided and already labeled.
+The dataset is pre-labeled and provided for the project.
 
 ---
 
 ## Data Preprocessing
-- Missing values handled using empty strings
-- Text fields combined into a single `combined_text`
-- Text converted to lowercase for normalization
+- Missing values are handled by replacing them with empty strings
+- All text fields are combined into a single input
+- Text is converted to lowercase for consistency
 
 ---
 
-## Feature Extraction
+## Feature Extraction and Engineering
 
-### 1. TF-IDF Features
-- TF-IDF (Term Frequency–Inverse Document Frequency) is used to convert text
-  into numerical vectors
-- Limited to the top **5000** features
-- English stop words removed
+### TF-IDF Features
+Textual data is converted into numerical features using TF-IDF
+(Term Frequency–Inverse Document Frequency). The vectorizer is limited to the
+top 5000 features and English stop words are removed.
 
-### 2. Feature Engineering (Creative Features)
-To improve performance and interpretability, domain-specific features were added:
-
+### Engineered Features
+In addition to TF-IDF, domain-specific features are added to better capture
+problem complexity:
 - Text length
 - Mathematical symbol count and density
-- Algorithm keyword frequency (graph, dp, tree, bfs, dfs, etc.)
+- Algorithm keyword frequency (graph, dp, tree, etc.)
 - Algorithm hint count
 - Constraint count and maximum constraint value
 - Constraint-related word frequency
-- Sample input/output complexity
-
-These features capture signals that raw text statistics may miss.
 
 ---
 
-## Models
+## Models Used
 
 ### Classification Model
-- **Model:** Logistic Regression  
-- **Task:** Predict problem difficulty class  
-- **Evaluation:**
-  - Accuracy ≈ **51%**
-  - Confusion Matrix: **[[ 47  64  42]**
-                       **[ 24 291  74]**
-                       **[ 21 179  81]]**
-  - Confusion matrix shows strongest performance on Hard problems
-  - Medium problems are the most ambiguous due to subjective labeling
+- Model: Logistic Regression
+- Task: Predict difficulty class (Easy / Medium / Hard)
+- Accuracy: ~51%
 
 ### Regression Model
-- **Model:** Ridge Regression  
-- **Task:** Predict numerical difficulty score  
-- **Evaluation Metrics:**
-  - MAE ≈ **1.71**
-  - RMSE ≈ **2.06**
+- Model: Ridge Regression
+- Task: Predict numerical difficulty score
+- MAE: ~1.7
+- RMSE: ~2.1
 
-Ridge regression was chosen to handle the high-dimensional TF-IDF feature space
-and avoid numerical instability.
+Ridge regression is used to ensure numerical stability with high-dimensional
+TF-IDF features.
 
 ---
 
 ## Web Interface
-A Streamlit-based web application allows users to:
+A Streamlit-based web interface allows users to paste a problem description,
+input format, and output format. The system then predicts the difficulty class
+and difficulty score in real time.
 
-- Paste a problem description
-- Predict difficulty class and score instantly
+---
 
-Run the app with:
+## How to Run the Project Locally
+
 ```bash
+git clone https://github.com/anmoly-tech/AutoJudge.git
+cd AutoJudge
+pip install -r requirements.txt
 python3 -m streamlit run app.py

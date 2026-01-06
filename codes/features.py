@@ -13,18 +13,17 @@ DATA_PATH = os.path.abspath(
 )
 
 df = pd.read_json(DATA_PATH, lines=True)
-
-
 df.fillna("", inplace=True)
+
 
 df["combined_text"] = (
     df["title"] + " " +
     df["description"] + " " +
     df["input_description"] + " " +
     df["output_description"]
-)
+).str.lower()
 
-df["combined_text"] = df["combined_text"].str.lower()
+# TF-IDF FEATURES
 
 vectorizer = TfidfVectorizer(
     max_features=5000,
@@ -33,15 +32,21 @@ vectorizer = TfidfVectorizer(
 
 X_text = vectorizer.fit_transform(df["combined_text"])
 
+# MANUAL FEATURES
+
 # 1. Text length
 df["text_length"] = df["combined_text"].apply(len)
 
-# 2. Math symbol count
-df["math_symbol_count"] = df["combined_text"].apply(
-    lambda x: sum(1 for c in x if c in "$\\_^<>=")
-)
+# 2. Math density
+def math_density(text):
+    if not text:
+        return 0
+    math_chars = sum(1 for c in text if c in "$\\_^<>=")
+    return math_chars / len(text)
 
-# 3. Keyword count (topic-based)
+df["math_density"] = df["combined_text"].apply(math_density)
+
+# 3. Keyword count
 KEYWORDS = [
     "graph", "tree", "dfs", "bfs",
     "dp", "dynamic programming",
@@ -55,34 +60,21 @@ def keyword_count(text):
 
 df["keyword_count"] = df["combined_text"].apply(keyword_count)
 
-# 4. Algorithm hint count
-ALGO_HINTS = [
-    "dynamic programming", "dp", "greedy",
-    "binary search", "shortest path",
-    "flow", "matching", "segment tree",
-    "fenwick", "fft", "bitmask"
-]
-
-def algo_hint_count(text):
-    return sum(text.count(h) for h in ALGO_HINTS)
-
-df["algo_hint_count"] = df["combined_text"].apply(algo_hint_count)
-
-# 5. Constraint count (large numbers)
+# 4. Constraint count
 def constraint_count(text):
     numbers = re.findall(r"\d+", text)
     return sum(1 for n in numbers if int(n) >= 1000)
 
 df["constraint_count"] = df["combined_text"].apply(constraint_count)
 
-# 6. Max constraint value
+# 5. Max constraint value
 def max_constraint_value(text):
     numbers = re.findall(r"\d+", text)
     return max([int(n) for n in numbers], default=0)
 
 df["max_constraint_value"] = df["combined_text"].apply(max_constraint_value)
 
-# 7. Constraint-related word count
+# 6. Constraint-related words
 CONSTRAINT_WORDS = ["constraint", "constraints", "<=", "≤", "bound", "limit"]
 
 def constraint_word_count(text):
@@ -90,7 +82,7 @@ def constraint_word_count(text):
 
 df["constraint_word_count"] = df["combined_text"].apply(constraint_word_count)
 
-# 8. Sample I/O complexity
+# 7. Sample I/O length
 def sample_io_length(sample):
     if not isinstance(sample, list):
         return 0
@@ -101,21 +93,12 @@ def sample_io_length(sample):
 
 df["sample_io_length"] = df["sample_io"].apply(sample_io_length)
 
-# 9. Math density
-def math_density(text):
-    if len(text) == 0:
-        return 0
-    math_chars = sum(1 for c in text if c in "$\\_^<>=")
-    return math_chars / len(text)
-
-df["math_density"] = df["combined_text"].apply(math_density)
+# FINAL FEATURE MATRIX
 
 manual_feature_columns = [
     "text_length",
-    "math_symbol_count",
     "math_density",
     "keyword_count",
-    "algo_hint_count",
     "constraint_count",
     "max_constraint_value",
     "constraint_word_count",
@@ -131,11 +114,12 @@ X = hstack([X_text, manual_features_scaled])
 
 print("Final feature matrix shape:", X.shape)
 
+# EXPORTS
+
 __all__ = [
     "vectorizer",
     "scaler",
     "keyword_count",
-    "algo_hint_count",
     "constraint_count",
     "max_constraint_value",
     "constraint_word_count",

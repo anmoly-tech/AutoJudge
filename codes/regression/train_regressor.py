@@ -22,9 +22,8 @@ X_train, X_test, y_train, y_test = train_test_split(
     test_size=0.2,
     random_state=42
 )
-# -------------------------------------------------
+
 # MODEL: RIDGE REGRESSION
-# -------------------------------------------------
 # Ridge regression is used instead of plain linear regression
 # because TF-IDF creates a very high-dimensional feature space.
 # Regularization helps prevent unstable coefficients and
