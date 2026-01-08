@@ -94,5 +94,5 @@ and difficulty score in real time.
 ```bash
 git clone https://github.com/anmoly-tech/AutoJudge.git
 cd AutoJudge
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 python3 -m streamlit run app.py
