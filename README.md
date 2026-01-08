@@ -96,3 +96,16 @@ git clone https://github.com/anmoly-tech/AutoJudge.git
 cd AutoJudge
 pip3 install -r requirements.txt
 python3 -m streamlit run app.py
+```
+## DEMO VIDEO LINK
+[Link Text](https://drive.google.com/file/d/1e5EhqUzFpRYrKE2S6AzAvb3Un5nPUoPu/view?usp=sharing)
+
+---
+
+##Author Details
+Name: Anmol Yadav
+Program: B.Tech
+Department: Electrical Engineering
+Year: 2nd Year
+Enrollment Number: 24117016
+
